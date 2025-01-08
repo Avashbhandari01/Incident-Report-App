@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullName    String?
+  userName    String[]
+  email       String[] @unique
+  mobilePhone String[]
+  imageUser   String[]
+  password    String?
+  role        UserRole @default(User)
+  reports     Report[]
+}
+
+model Report {
+  id                     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  description            String
+  imageIncident          String[]
+  location               String
+  longitude              Float
+  latitude               Float
+  status                 String       @default("Pending")
+  priority               String
+  reportedAt             DateTime     @default(now())
+  emergencyContactNumber String?      @db.VarChar(50)
+  incidentId             String       @db.Uuid
+  userId                 String       @db.Uuid
+  user                   User         @relation(fields: [userId], references: [id])
+  incident               IncidentType @relation(fields: [incidentId], references: [id])
+}
+
+model IncidentType {
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name    String
+  reports Report[]
+}
+
+enum UserRole {
+  Admin
+  User
+}
