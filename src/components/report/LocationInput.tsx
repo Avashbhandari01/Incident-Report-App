@@ -1,13 +1,28 @@
+"use client";
 import { useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((m) => m.MapContainer),
+  {
+    ssr: false,
+  }
+);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((m) => m.TileLayer),
+  {
+    ssr: false,
+  }
+);
+const Marker = dynamic(() => import("react-leaflet").then((m) => m.Marker), {
+  ssr: false,
+});
+const Popup = dynamic(() => import("react-leaflet").then((m) => m.Popup), {
+  ssr: false,
+});
+import { useMapEvents } from "react-leaflet";
 
 interface LocationInputProps {
   value: string;
@@ -23,7 +38,9 @@ export function LocationInput({
   const [position, setPosition] = useState<[number, number] | null>(null);
 
   function LocationMarker() {
-    useMapEvents({
+    const MapEvents = useMapEvents as unknown as typeof useMapEvents;
+
+    MapEvents({
       click(event) {
         const { lat, lng } = event.latlng;
         setPosition([lat, lng]);
@@ -77,3 +94,5 @@ export function LocationInput({
     </div>
   );
 }
+
+export default LocationInput;

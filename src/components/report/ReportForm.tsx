@@ -1,6 +1,11 @@
 "use client";
 import { useState, useCallback } from "react";
-import { LocationInput } from "./LocationInput";
+// import { LocationInput } from "./LocationInput";
+import dynamic from "next/dynamic";
+
+const LocationInput = dynamic(() => import("./LocationInput"), {
+  ssr: false,
+});
 
 const REPORT_TYPES = [
   "Theft",
