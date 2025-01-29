@@ -58,13 +58,13 @@ export function LocationInput({
       shadowSize: [41, 41],
     });
 
-    return position === null ? null : (
+    return position ? (
       <Marker position={position} icon={customIcon}>
         <Popup>{`Latitude: ${position[0].toFixed(
           6
         )}, Longitude: ${position[1].toFixed(6)}`}</Popup>
       </Marker>
-    );
+    ) : null;
   }
 
   return (
@@ -84,13 +84,15 @@ export function LocationInput({
         </MapContainer>
       </div>
 
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5 text-white"
-        readOnly
-      />
+      {position && (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-xl bg-zinc-900/50 border border-zinc-800 px-4 py-3.5 text-white"
+          readOnly
+        />
+      )}
     </div>
   );
 }
