@@ -1,5 +1,5 @@
 "use client";
-import { ReportWizard } from "@/src/components/report/ReportWizaed";
+import { ReportWizard } from "@/src/components/report/ReportWizard";
 
 export default function SubmitReport() {
   return (

@@ -13,42 +13,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  fullName    String?
-  userName    String[]
-  email       String[] @unique
-  mobilePhone String[]
-  imageUser   String[]
-  password    String?
-  role        UserRole @default(User)
-  reports     Report[]
-}
-
 model Report {
-  id                     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  description            String
-  imageIncident          String[]
-  location               String
-  longitude              Float
-  latitude               Float
-  status                 String       @default("Pending")
-  priority               String
-  reportedAt             DateTime     @default(now())
-  emergencyContactNumber String?      @db.VarChar(50)
-  incidentId             String       @db.Uuid
-  userId                 String       @db.Uuid
-  user                   User         @relation(fields: [userId], references: [id])
-  incident               IncidentType @relation(fields: [incidentId], references: [id])
+  id          String       @id @default(cuid())
+  reportId    String       @unique
+  type        ReportType
+  title       String
+  description String
+  reportType  String
+  location    String?
+  latitude    Float
+  longitude   Float
+  image       String?
+  status      ReportStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([reportId])
 }
 
-model IncidentType {
-  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name    String
-  reports Report[]
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  name     String
+  password String
+  role     Role   @default(USER)
 }
 
-enum UserRole {
-  Admin
-  User
+enum Role {
+  ADMIN
+  MODERATOR
+  USER
+}
+
+enum ReportStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportType {
+  EMERGENCY
+  NON_EMERGENCY
 }
