@@ -2,6 +2,8 @@
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import crypto from "crypto";
+import { analyzeImage } from "@/app/actions/analyze-image";
+import { submitReport } from "@/app/actions/reports/submitReport";
 
 const LocationInput = dynamic(() => import("./LocationInput"), {
   ssr: false,
@@ -49,19 +51,19 @@ export function ReportForm({ onComplete }: ReportFormProps) {
     setIsAnalyzing(true);
 
     try {
-      const base64 = await new Promise((resolve) => {
+      const base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => reject("Error reading file");
         reader.readAsDataURL(file);
       });
 
-      const response = await fetch("/api/analyze-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
-      });
+      const data = await analyzeImage(base64 as string);
 
-      const data = await response.json();
+      if ("error" in data) {
+        console.error("Image analysis error:", data.error);
+        return;
+      }
 
       if (data.title && data.description && data.reportType) {
         setFormData((prev) => ({
@@ -102,23 +104,15 @@ export function ReportForm({ onComplete }: ReportFormProps) {
         title: formData.title,
         description: formData.description,
         location: formData.location,
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-        image: image,
+        latitude: coordinates.latitude || undefined,
+        longitude: coordinates.longitude || undefined,
+        image: image || undefined,
         status: "PENDING",
       };
 
-      const response = await fetch("/api/reports/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reportData),
-      });
+      const result = await submitReport(reportData);
 
-      const result = await response.json();
-
-      if (!response.ok) {
+      if (!result.success) {
         throw new Error(result.error || "Failed to submit report");
       }
 
