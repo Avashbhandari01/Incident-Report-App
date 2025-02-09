@@ -37,15 +37,36 @@ export function LocationInput({
 }: LocationInputProps) {
   const [position, setPosition] = useState<[number, number] | null>(null);
 
+  // Function to fetch location name from OpenCage API
+  const getLocationName = async (lat: number, lng: number) => {
+    const apiKey = process.env.NEXT_PUBLIC_OPENCAGE_API_KEY;
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.results.length > 0) {
+        return data.results[0].formatted;
+      }
+      return "Location not found";
+    } catch (error) {
+      console.error("Error fetching location data:", error);
+      return "Error fetching location";
+    }
+  };
+
   function LocationMarker() {
     const MapEvents = useMapEvents as unknown as typeof useMapEvents;
 
     MapEvents({
-      click(event) {
+      async click(event) {
         const { lat, lng } = event.latlng;
         setPosition([lat, lng]);
         onCoordinatesChange(lat, lng);
-        onChange(`Latitude: ${lat.toFixed(6)}, Longitude: ${lng.toFixed(6)}`);
+
+        // Fetch location name from OpenCage API and update input field
+        const locationName = await getLocationName(lat, lng);
+        onChange(locationName); // Set the location name as the value in input field
       },
     });
 
