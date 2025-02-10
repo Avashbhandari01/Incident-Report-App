@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Loader } from "lucide-react";
+import { getReportDetails } from "@/app/actions/reports/getReport";
 
 interface ReportDetails {
   id: string;
@@ -36,11 +37,7 @@ export function ReportTracker() {
     }
 
     try {
-      const response = await fetch(`/api/reports/${reportId}/details`);
-      if (!response.ok) {
-        throw new Error("Report not found");
-      }
-      const data = await response.json();
+      const data = await getReportDetails(reportId);
       setReportDetails(data);
     } catch (err) {
       setError("Unable to find report. Please check the ID and try again.");

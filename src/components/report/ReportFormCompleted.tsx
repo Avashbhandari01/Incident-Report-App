@@ -51,7 +51,7 @@ export function ReportSubmitted({ data }: ReportSubmittedProps) {
             <code className="text-sky-400">{reportId}</code>
           </div>
           <button
-            onClick={handleCopy}
+            onClick={() => handleCopy(reportId)}
             className="text-white hover:text-gray-400 transition-all"
           >
             {copied ? (
