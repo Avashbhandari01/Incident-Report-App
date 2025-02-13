@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.7.4",
     "@google/generative-ai": "^0.21.0",
     "@prisma/client": "^6.2.0",
     "@types/leaflet": "^1.9.16",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "leaflet": "^1.9.4",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/bcryptjs": "^2.4.6",
     "@types/next": "^8.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
