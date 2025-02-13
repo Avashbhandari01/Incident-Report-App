@@ -88,7 +88,7 @@ export default function SignUp() {
               <div className="mt-1">
                 <input
                   id="name"
-                  name="fullname"
+                  name="name"
                   type="text"
                   required
                   value={formData.name}
